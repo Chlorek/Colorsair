@@ -6,3 +6,11 @@ so it is the only tested configuration now (however I did put effort to make it 
 
 WARNING: This project is prototype as it is now, but I am going to make it fully featured driver/controller.
 It has no interface whatsoever or way to control it outside of programming API yet.
+
+## Dependencies
+C++14 compiler and just libusb 1.0.
+
+## Licensing
+GNU GPL v2
+
+See LICENSE.GPL2
