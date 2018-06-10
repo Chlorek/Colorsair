@@ -9,6 +9,8 @@
 
 #include "Device.hpp"
 #include "FanController.hpp"
+#include "StaticEffect.hpp"
+#include "LinearEffect.hpp"
 
 using namespace std;
 using namespace colorsair;
@@ -25,9 +27,11 @@ int main(int argc, char** argv) {
             cout << "Communication channel established" << endl;
             
             FanController ctrl(dev, 2);
-            ctrl.setColor(0, {RGB{255, 255, 0}, RGB{255, 255, 0}, RGB{255, 255, 0}, RGB{255, 255, 0}});
-            //ctrl.setColor(1, {RGB{255, 255, 0}, RGB{255, 255, 0}, RGB{255, 255, 0}, RGB{255, 255, 0}});
-            ctrl.setColor(1, {RGB{255, 0, 0}, RGB{255, 0, 255}, RGB{255, 0, 0}, RGB{255, 0, 255}});
+            StaticEffect staticRed({255, 255, 0});
+            StaticEffect staticCyan({255, 0, 255});
+
+            ctrl.setEffect(0, staticRed);
+            ctrl.setEffect(1, staticCyan);
             
             cout << "Loop started" << endl;
             ctrl.loop();

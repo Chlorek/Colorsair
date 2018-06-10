@@ -9,6 +9,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <algorithm>
 
 #include <iostream>
 #include <iomanip>
@@ -25,21 +26,28 @@ namespace colorsair {
     }
     
     FanController::FanController(Device& dev, unsigned int fansCount)
-            : dev(dev), fansCount(fansCount), state(new RGB[fansCount*4]) {
+            : dev(dev), fansCount(fansCount) {
+        effects.reserve(fansCount);
+        for(int i = 0; i < fansCount; ++i)
+            effects.push_back(nullptr);
     }
 
     FanController::FanController(const FanController& orig)
             : dev(orig.dev), fansCount(orig.fansCount) {
-        std::memcpy(state, orig.state, fansCount*4);
+        //std::copy<Effect*>(effects, orig.effects, fansCount);
     }
 
     FanController::~FanController() {
-        delete[] state;
     }
     
-    void FanController::setColor(unsigned int fanId, std::array<RGB, 4> colors) {
-        for(int i = 0; i < 4; ++i)
-            state[fanId * 4 + i] = colors[i];
+    void FanController::setEffect(unsigned int fanId, Effect* effect) {
+        std::lock_guard<std::mutex> lock(stateMutex);
+        effects[fanId] = effect;
+    }
+    
+    void FanController::setEffect(unsigned int fanId, Effect& effect) {
+        std::lock_guard<std::mutex> lock(stateMutex);
+        effects[fanId] = &effect;
     }
     
     void FanController::loop() {
@@ -55,6 +63,19 @@ namespace colorsair {
         std::vector<uint8_t> colorData {0x32, 0x00, 0x00, (uint8_t)(fansCount*4)};
         
         for(;;) {
+            for(int i = 0; i < effects.size(); ++i) {
+                std::lock_guard<std::mutex> lock(stateMutex);
+                if(effects[i] != nullptr) {
+                    effects[i]->tick();
+                    /*state[i*4] = effects[i]->colors[0];
+                    state[i*4+1] = effects[i]->colors[1];
+                    state[i*4+2] = effects[i]->colors[2];
+                    state[i*4+3] = effects[i]->colors[3];*/
+                    //std::memcpy(state+(i*4), effects[i]->colors, 4);
+                    //std::fill(state+(i*4), state+(i*4)+4, i == 0 ?RGB{255, 255, 0} : RGB{255, 0, 0} );
+                }                    
+            }
+            
             // write constant boilerplate
             for(auto line : magicData) {
                 while(line.size() < 64) //pad the data with zeroes
@@ -73,13 +94,13 @@ namespace colorsair {
                 for(int i = 0; i < fansCount*4; ++i) {
                     switch(channel) {
                         case 0:
-                            colorCmd.push_back(state[i].r);
+                            colorCmd.push_back(effects[i/4]->colors[i%4].r);
                             break;
                         case 1:
-                            colorCmd.push_back(state[i].g);
+                            colorCmd.push_back(effects[i/4]->colors[i%4].g);
                             break;
                         case 2:
-                            colorCmd.push_back(state[i].b);
+                            colorCmd.push_back(effects[i/4]->colors[i%4].b);
                             break;
                         default:;
                     }
@@ -88,6 +109,8 @@ namespace colorsair {
                     colorCmd.push_back(0x00);
                 //std::cout << colorCmd << "\n" << std::endl;
                 WriteResult wr = dev.writeInterrupt(1, colorCmd);
+                if(wr.result != 0 || wr.written != 64)
+                    std::cout << "Write Error #" << wr.result << " | written " << wr.written << endl;
             }
             
             std::this_thread::sleep_for(2ms);

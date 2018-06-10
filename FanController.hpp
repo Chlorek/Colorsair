@@ -8,10 +8,12 @@
 #ifndef FANCONTROLLER_HPP
 #define FANCONTROLLER_HPP
 
-#include <array>
+#include <vector>
+#include <mutex>
 
 #include "Device.hpp"
 #include "Types.hpp"
+#include "Effect.hpp"
 
 namespace colorsair {
     class FanController {
@@ -20,12 +22,15 @@ namespace colorsair {
             FanController(const FanController& orig);
             virtual ~FanController();
             
-            void setColor(unsigned int fanId, std::array<RGB, 4> colors);
+            void setEffect(unsigned int fanId, Effect* effect);
+            void setEffect(unsigned int fanId, Effect& effect);
             void loop();
         private:
             Device& dev;
             unsigned int fansCount;
-            RGB* state;
+            //RGB* state;
+            std::vector<Effect*> effects;
+            std::mutex stateMutex;
     };
 }
 
