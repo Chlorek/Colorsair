@@ -19,7 +19,7 @@ namespace colorsair {
     class FanController {
         public:
             FanController(Device& dev, unsigned int fansCount);
-            FanController(const FanController& orig);
+            FanController(const FanController& orig) = delete;
             virtual ~FanController();
             
             void setEffect(unsigned int fanId, Effect* effect);

@@ -32,11 +32,6 @@ namespace colorsair {
             effects.push_back(nullptr);
     }
 
-    FanController::FanController(const FanController& orig)
-            : dev(orig.dev), fansCount(orig.fansCount) {
-        //std::copy<Effect*>(effects, orig.effects, fansCount);
-    }
-
     FanController::~FanController() {
     }
     
