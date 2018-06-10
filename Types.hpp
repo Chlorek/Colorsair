@@ -10,7 +10,7 @@
 
 namespace colorsair {
     struct RGB {
-        unsigned char r, g, b;
+        unsigned char r = 0, g = 0, b = 0;
     };
     
     struct WriteResult {
