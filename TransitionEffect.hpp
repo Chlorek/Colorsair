@@ -28,11 +28,12 @@ namespace colorsair {
             
             virtual float tick() {
                 float progress = LinearEffect::tick();
+                std::fill(&(colors[0]), &(colors[4]), Effect::lerp(from, to, progress));
+                
                 if(progress >= 1) {
                     from = to;
                     to = provider.next();
                 }
-                std::fill(&(colors[0]), &(colors[4]), Effect::lerp(from, to, progress));
             }
         private:
             PROVIDER_T provider;

@@ -29,12 +29,11 @@ int main(int argc, char** argv) {
             cout << "Communication channel established" << endl;
             
             FanController ctrl(dev, 2);
-            StaticEffect staticRed({255, 255, 0});
-            StaticEffect staticCyan({255, 0, 255});
             TransitionEffect<CyclicColorProvider> transition(5s, CyclicColorProvider({{255, 255, 0}, {255, 0, 0}, {0, 0, 255}}));
 
             ctrl.setEffect(0, transition);
-            ctrl.setEffect<BreathingEffect>(1, BreathingEffect(4s, {255, 255, 0}));
+            ctrl.setEffect(1, transition);
+            //ctrl.setEffect<BreathingEffect>(1, BreathingEffect(4s, {255, 255, 0}));
             
             cout << "Loop started" << endl;
             ctrl.loop();
