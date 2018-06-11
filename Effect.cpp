@@ -19,4 +19,12 @@ namespace colorsair {
 
     Effect::~Effect() {
     }
+    
+    RGB Effect::lerp(RGB a, RGB b, float weight) {
+        return {
+                   (uint8_t)(a.r*(1-weight) + b.r*weight),
+                   (uint8_t)(a.g*(1-weight) + b.g*weight),
+                   (uint8_t)(a.b*(1-weight) + b.b*weight)
+               };
+    }
 }

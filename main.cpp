@@ -10,7 +10,9 @@
 #include "Device.hpp"
 #include "FanController.hpp"
 #include "StaticEffect.hpp"
-#include "LinearEffect.hpp"
+#include "BreathingEffect.hpp"
+#include "CyclicColorProvider.hpp"
+#include "TransitionEffect.hpp"
 
 using namespace std;
 using namespace colorsair;
@@ -29,9 +31,10 @@ int main(int argc, char** argv) {
             FanController ctrl(dev, 2);
             StaticEffect staticRed({255, 255, 0});
             StaticEffect staticCyan({255, 0, 255});
+            TransitionEffect<CyclicColorProvider> transition(5s, CyclicColorProvider({{255, 255, 0}, {255, 0, 0}, {0, 0, 255}}));
 
-            ctrl.setEffect(0, staticRed);
-            ctrl.setEffect(1, staticCyan);
+            ctrl.setEffect(0, transition);
+            ctrl.setEffect<BreathingEffect>(1, BreathingEffect(4s, {255, 255, 0}));
             
             cout << "Loop started" << endl;
             ctrl.loop();

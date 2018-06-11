@@ -35,16 +35,6 @@ namespace colorsair {
     FanController::~FanController() {
     }
     
-    void FanController::setEffect(unsigned int fanId, Effect* effect) {
-        std::lock_guard<std::mutex> lock(stateMutex);
-        effects[fanId] = effect;
-    }
-    
-    void FanController::setEffect(unsigned int fanId, Effect& effect) {
-        std::lock_guard<std::mutex> lock(stateMutex);
-        effects[fanId] = &effect;
-    }
-    
     void FanController::loop() {
         dev.reset();
         
@@ -60,9 +50,8 @@ namespace colorsair {
         for(;;) {
             for(int i = 0; i < effects.size(); ++i) {
                 std::lock_guard<std::mutex> lock(stateMutex);
-                if(effects[i] != nullptr) {
-                    effects[i]->tick();
-                }                    
+                if(effects[i])
+                    effects[i]->tick();                
             }
             
             // write constant boilerplate

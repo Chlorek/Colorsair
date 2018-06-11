@@ -9,11 +9,15 @@
 #define FANCONTROLLER_HPP
 
 #include <vector>
+#include <memory>
 #include <mutex>
 
 #include "Device.hpp"
 #include "Types.hpp"
 #include "Effect.hpp"
+
+#include <iostream>
+#include <iomanip>
 
 namespace colorsair {
     class FanController {
@@ -22,14 +26,17 @@ namespace colorsair {
             FanController(const FanController& orig) = delete;
             virtual ~FanController();
             
-            void setEffect(unsigned int fanId, Effect* effect);
-            void setEffect(unsigned int fanId, Effect& effect);
+            template<class EFFECT_T>
+            void setEffect(unsigned int fanId, EFFECT_T effect) {
+                std::lock_guard<std::mutex> lock(stateMutex);
+                effects[fanId] = std::make_unique<EFFECT_T>(effect);
+            }
+
             void loop();
         private:
             Device& dev;
             unsigned int fansCount;
-            //RGB* state;
-            std::vector<Effect*> effects;
+            std::vector<std::unique_ptr<Effect>> effects;
             std::mutex stateMutex;
     };
 }

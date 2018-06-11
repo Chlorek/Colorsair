@@ -9,6 +9,7 @@
 #define EFFECT_HPP
 
 #include "Types.hpp"
+#include <algorithm>
 
 namespace colorsair {
     class Effect {
@@ -18,6 +19,8 @@ namespace colorsair {
             virtual ~Effect();
             
             virtual float tick() = 0;
+            
+            static RGB lerp(RGB a, RGB b, float weight);
             
             RGB colors[4];
         private:
