@@ -62,12 +62,6 @@ namespace colorsair {
                 std::lock_guard<std::mutex> lock(stateMutex);
                 if(effects[i] != nullptr) {
                     effects[i]->tick();
-                    /*state[i*4] = effects[i]->colors[0];
-                    state[i*4+1] = effects[i]->colors[1];
-                    state[i*4+2] = effects[i]->colors[2];
-                    state[i*4+3] = effects[i]->colors[3];*/
-                    //std::memcpy(state+(i*4), effects[i]->colors, 4);
-                    //std::fill(state+(i*4), state+(i*4)+4, i == 0 ?RGB{255, 255, 0} : RGB{255, 0, 0} );
                 }                    
             }
             
@@ -87,6 +81,7 @@ namespace colorsair {
                 colorCmd.reserve(64);
                 colorCmd.push_back(channel);
                 for(int i = 0; i < fansCount*4; ++i) {
+                    std::lock_guard<std::mutex> lock(stateMutex);
                     switch(channel) {
                         case 0:
                             colorCmd.push_back(effects[i/4]->colors[i%4].r);
