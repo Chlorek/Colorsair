@@ -27,7 +27,7 @@ namespace colorsair {
     
     FanController::FanController(Device& dev, unsigned int fansCount, uint8_t framerate)
             : dev(dev), fansCount(fansCount), framerate(framerate),
-              timestep(1000/framerate), last_count(std::chrono::system_clock::now()) {
+              timestep(1000/framerate), frameCountTime(std::chrono::system_clock::now()) {
         effects.reserve(fansCount);
         for(int i = 0; i < fansCount; ++i)
             effects.push_back(nullptr);
@@ -49,6 +49,7 @@ namespace colorsair {
         std::vector<uint8_t> colorData {0x32, 0x00, 0x00, (uint8_t)(fansCount*4)};
         
         for(;;) {
+            frameStart = std::chrono::system_clock::now();
             for(int i = 0; i < effects.size(); ++i) {
                 std::lock_guard<std::mutex> lock(stateMutex);
                 if(effects[i])
@@ -64,7 +65,7 @@ namespace colorsair {
                 if(wr.result != 0 || wr.written != 64)
                     std::cout << "Write Error #" << wr.result << " | written " << wr.written << endl;
             }
-
+            
             // write colors
             for(int channel = 0; channel < 3; ++channel) {
                 std::vector<uint8_t> colorCmd(colorData.begin(), colorData.end());
@@ -94,13 +95,18 @@ namespace colorsair {
             }
             
             // Frames control
+            unsigned int frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - frameStart).count();
+            if(frameTime < timestep) {
+                //std::cout << "Sleeping for " << timestep-frameTime << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(timestep-frameTime));
+            }
+            
             ++frames;
-            if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - last_count).count() > 1000) {
-                last_count = std::chrono::system_clock::now();
-                std::cout << "Framerate " << (int)frames << std::endl;
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - frameCountTime).count() > 1000) {
+                frameCountTime = std::chrono::system_clock::now();
+                //std::cout << "Framerate " << (int)frames << std::endl;
                 frames = 0;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(timestep));
         }
     }
 }

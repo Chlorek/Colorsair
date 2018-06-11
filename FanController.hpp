@@ -22,7 +22,7 @@
 namespace colorsair {
     class FanController {
         public:
-            FanController(Device& dev, unsigned int fansCount, uint8_t framerate = 60);
+            FanController(Device& dev, unsigned int fansCount, uint8_t framerate = 20);
             FanController(const FanController& orig) = delete;
             virtual ~FanController();
             
@@ -40,7 +40,7 @@ namespace colorsair {
             std::mutex stateMutex;
             
             unsigned short timestep;
-            std::chrono::system_clock::time_point last_count;
+            std::chrono::system_clock::time_point frameCountTime, frameStart;
             uint8_t frames = 0;
             uint8_t framerate;
     };
