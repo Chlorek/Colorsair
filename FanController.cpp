@@ -25,8 +25,9 @@ namespace colorsair {
         return os;
     }
     
-    FanController::FanController(Device& dev, unsigned int fansCount)
-            : dev(dev), fansCount(fansCount) {
+    FanController::FanController(Device& dev, unsigned int fansCount, uint8_t framerate)
+            : dev(dev), fansCount(fansCount), framerate(framerate),
+              timestep(1000/framerate), last_count(std::chrono::system_clock::now()) {
         effects.reserve(fansCount);
         for(int i = 0; i < fansCount; ++i)
             effects.push_back(nullptr);
@@ -89,10 +90,17 @@ namespace colorsair {
                 //std::cout << colorCmd << "\n" << std::endl;
                 WriteResult wr = dev.writeInterrupt(1, colorCmd);
                 if(wr.result != 0 || wr.written != 64)
-                    std::cout << "Write Error #" << wr.result << " | written " << wr.written << endl;
+                    std::cout << "Write Error #" << wr.result << " | written " << wr.written << std::endl;
             }
             
-            std::this_thread::sleep_for(2ms);
+            // Frames control
+            ++frames;
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - last_count).count() > 1000) {
+                last_count = std::chrono::system_clock::now();
+                std::cout << "Framerate " << (int)frames << std::endl;
+                frames = 0;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(timestep));
         }
     }
 }

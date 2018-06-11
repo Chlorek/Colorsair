@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
             cout << "Communication channel established" << endl;
             
             FanController ctrl(dev, 2);
-            TransitionEffect<CyclicColorProvider> transition(5s, CyclicColorProvider({{255, 255, 0}, {255, 0, 0}, {0, 0, 255}}));
+            TransitionEffect<CyclicColorProvider> transition(5s, CyclicColorProvider({{0, 255, 0}, {255, 0, 0}, {0, 0, 255}}));
 
             ctrl.setEffect(0, transition);
             ctrl.setEffect(1, transition);
