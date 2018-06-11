@@ -68,7 +68,9 @@ namespace colorsair {
     WriteResult Device::writeInterrupt(unsigned char endpoint, std::vector<unsigned char> data) {
         int written;
         int res = LIBUSB_ERROR_TIMEOUT;
-        while(res == LIBUSB_ERROR_TIMEOUT) {
+        int attempts = 0;
+        while(res == LIBUSB_ERROR_TIMEOUT && attempts < 15) {
+            ++attempts;
             res = libusb_interrupt_transfer(handle, (endpoint | LIBUSB_ENDPOINT_OUT), &data[0], data.size(), &written, 100);
             if(res == LIBUSB_ERROR_TIMEOUT)
                 reset();
