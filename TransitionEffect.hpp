@@ -20,7 +20,7 @@ namespace colorsair {
             }
                 
             TransitionEffect(const TransitionEffect& orig)
-                : LinearEffect(orig), provider(orig.provider) {
+                : LinearEffect(orig), provider(orig.provider), from(orig.from), to(orig.to) {
             };
             
             virtual ~TransitionEffect() {
