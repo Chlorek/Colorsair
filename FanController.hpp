@@ -33,6 +33,8 @@ namespace colorsair {
             }
 
             void loop();
+            
+            unsigned int getFansCount();
         private:
             Device& dev;
             unsigned int fansCount;

@@ -53,9 +53,9 @@ namespace colorsair {
             for(int i = 0; i < effects.size(); ++i) {
                 std::lock_guard<std::mutex> lock(stateMutex);
                 if(effects[i])
-                    effects[i]->tick();                
+                    effects[i]->tick();
             }
-            
+
             // write constant boilerplate
             for(auto line : magicData) {
                 while(line.size() < 64) //pad the data with zeroes
@@ -108,5 +108,9 @@ namespace colorsair {
                 frames = 0;
             }
         }
+    }
+    
+    unsigned int FanController::getFansCount() {
+        return effects.size();
     }
 }

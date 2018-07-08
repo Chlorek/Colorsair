@@ -15,10 +15,12 @@ namespace colorsair {
     }
     
     StaticEffect::StaticEffect(RGB color) {
-        std::fill(colors, colors+4, color);
+        colors[0] = colors[1] = colors[2] = colors[3] = color;
     }
 
-    StaticEffect::StaticEffect(const StaticEffect& orig) {
+    StaticEffect::StaticEffect(const StaticEffect& orig) {\
+        for(int i = 0; i < 4; ++i)
+            colors[i] = orig.colors[i];
     }
 
     StaticEffect::~StaticEffect() {
