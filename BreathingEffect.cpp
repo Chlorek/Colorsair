@@ -24,8 +24,9 @@ namespace colorsair {
 
         if(progress > 1)
             progress = (2.f - progress);
-        
+
         RGB newColor = {(uint8_t)(color.r * progress), (uint8_t)(color.g * progress), (uint8_t)(color.b * progress)};
         std::fill(&(colors[0]), &(colors[4]), newColor);
+        return progress;
     }
 }
