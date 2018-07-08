@@ -2,8 +2,8 @@
 
 This project provides user-space driver, controller and easy to use API for Corsair RGB fans through Corsair Node.
 
-WARNING: This project is prototype as it is now, but I am going to make it fully featured driver/controller.
-It has no interface whatsoever or way to control it outside of programming API yet.
+WARNING: This project is a prototype as it is now, but I came together with ckb-next developers to implement it in already existing driver and controller.
+Right now it has no interface whatsoever or way to control it outside of programming API.
 
 ## Features
 - effects (Breathing, Linear color change, Static)
